@@ -1,0 +1,10 @@
+.modal-item{
+    margin: 10px;
+    img{
+        width: 110px;
+        height: 110px;
+    }
+    &>:nth-child(2){
+        display: flex;
+    }
+}
