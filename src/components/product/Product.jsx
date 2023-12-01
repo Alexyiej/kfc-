@@ -1,6 +1,6 @@
 import "./Product.scss"
 import BuyModal from '../buyModal/BuyModal.jsx'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Product(props) {
     const { product, onProductSelect, orderedProducts } = props;
@@ -8,8 +8,7 @@ function Product(props) {
     const [showModal, setShowModal] = useState(false);
 
     function handleButtonClick() {
-        setShowModal(false);
-        setShowModal(true);
+        setShowModal(!showModal);
     }
 
     function isOrdered() {
@@ -20,10 +19,20 @@ function Product(props) {
         return orderedProducts.filter((orderedProduct) => orderedProduct.id === product.id).length;
     }
 
+    useEffect(() => {
+        showModal ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto'; 
+
+        return () => {
+            document.body.style.overflow = 'auto'; 
+        };
+
+    }, [showModal]);
+
+
     return (
         <>
             {showModal && (
-                <BuyModal product={product} setShowModal={setShowModal} onProductSelect={onProductSelect} />
+                <BuyModal product={product} setShowModal={setShowModal} onProductSelect={onProductSelect}/>
             )}
             <article className="product" style={{ border: isOrdered() ? "1px solid green" : "none" }}>
                 <div>

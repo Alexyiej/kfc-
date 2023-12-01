@@ -11,14 +11,17 @@ superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
       items: 5
     },
+
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
       items: 3
     },
+
     tablet: {
       breakpoint: { max: 1024, min: 464 },
       items: 2
     },
+
     mobile: {
       breakpoint: { max: 464, min: 0 },
       items: 1
@@ -28,6 +31,9 @@ superLargeDesktop: {
 
 function BuyModal(props){
     const [productCount, setProductCount] = useState(1);
+    const [isLiked, setLiked] = useState(false);
+    let productList = [];
+
     let {product, setShowModal, onProductSelect} = props;
     let {name, price, description, imageUrl} = product;
 
@@ -35,6 +41,9 @@ function BuyModal(props){
         setShowModal(false);
     }
 
+    function handleLikeChange(){
+        setLiked(!isLiked);
+    }
 
     function handleDecrement() {
         if (productCount > 1) {
@@ -46,17 +55,19 @@ function BuyModal(props){
         setProductCount(prevCount => prevCount + 1);
     }
 
-    function handleButtonClick(){
-        hideModal();
-        let productList = [];
-        for (let i = 0; i < productCount; i++)
-            productList.push(product);
+    function handleButtonClick(hide, productList, selectedProduct){
+        
+        for (let i = 0; i < productCount; i++) {
+            productList.push(selectedProduct);
+        }
 
-        onProductSelect(productList);
+        hide ? hideModal(): null;
+        hide ? onProductSelect(productList) : null;
+
     }
 
     function createRecomendedProducts(){
-        let recomendedProducts = products.slice(0, 4)
+        let recomendedProducts = products.slice(0, 10)
         return recomendedProducts
     }
 
@@ -66,7 +77,7 @@ function BuyModal(props){
         <article className="buy-modal">
             <header>
                 <i class="fa-solid fa-arrow-left" onClick={hideModal}></i>
-                <i class="fa-regular fa-heart"></i>
+                {isLiked ? <i class="fa-solid fa-heart" onClick={handleLikeChange}></i> : <i class="fa-regular fa-heart" onClick={handleLikeChange}></i>}
             </header>
             <div>
                 <img src={imageUrl} alt=""/>
@@ -88,11 +99,14 @@ function BuyModal(props){
                         <i class="fa-solid fa-arrow-right"></i>
                     </div>
                 </header>
-                <Carousel responsive={responsive}>
-                {createRecomendedProducts().map((product) => (  
-                    <ModalItem product={product} />
-                ))}
-                </Carousel>
+                <div>
+                    <Carousel responsive={responsive}>
+                        {createRecomendedProducts().map((itemProduct) => (  
+                            <ModalItem product={itemProduct} onButtonClick={() => handleButtonClick(false, productList, itemProduct)}/>
+                        ))}
+                    </Carousel>
+                </div>
+
             </section>
             <footer>
                 <div>
@@ -100,7 +114,7 @@ function BuyModal(props){
                     <span>{productCount}</span>
                     <button onClick={handleIncrement}>+</button>
                 </div>
-                <button onClick={handleButtonClick}>Dodaj do koszyka 12.99</button>
+                <button onClick={() => handleButtonClick(true, productList, product)}>Dodaj do koszyka 12.99</button>
             </footer>
         </article>
         </>
